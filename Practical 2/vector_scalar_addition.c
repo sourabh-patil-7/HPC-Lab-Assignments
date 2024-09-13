@@ -1,26 +1,55 @@
 #include <stdio.h>
 #include <omp.h>
 
-int main() {
-    int n = 1000000;  // Size of the vector
-    int scalar = 5;   // Scalar value to add
+int main()
+{
+    int n = 1000000; 
+    int scalar = 5;  
     int vector[n];
-    
-    // Initialize the vector
-    for (int i = 0; i < n; i++) {
+    double start_time, end_time, serial_time, parallel_time;
+
+    for (int i = 0; i < n; i++)
+    {
         vector[i] = i;
     }
-    
-    // Parallel vector-scalar addition
-    #pragma omp parallel for
-    for (int i = 0; i < n; i++) {
+
+    start_time = omp_get_wtime();
+    for (int i = 0; i < n; i++)
+    {
+        vector[i] = i; 
         vector[i] += scalar;
     }
+    end_time = omp_get_wtime();
+    serial_time = end_time - start_time;
+    printf("Serial Execution Time: %f seconds\n", serial_time);
 
-    // Print the first 10 elements of the result vector for verification
-    for (int i = 0; i < 10; i++) {
+
+    for (int i = 0; i < n; i++)
+    {
+        vector[i] = i;
+    }
+
+
+    start_time = omp_get_wtime();
+    #pragma omp parallel for
+    for (int i = 0; i < n; i++)
+    {
+        vector[i] += scalar;
+    }
+    end_time = omp_get_wtime();
+    parallel_time = end_time - start_time;
+    printf("Parallel Execution Time: %f seconds\n", parallel_time);
+
+
+    double speedup = serial_time / parallel_time;
+    printf("Speedup: %f\n", speedup);
+
+
+    for (int i = 0; i < 10; i++)
+    {
         printf("%d ", vector[i]);
     }
     printf("\n");
+
     return 0;
 }
